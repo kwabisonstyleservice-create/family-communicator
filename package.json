@@ -1,6 +1,6 @@
 {
   "name": "family-communicator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -23,6 +23,7 @@
     "pg": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "resend": "^6.28.0",
     "zod": "latest"
   },
   "devDependencies": {

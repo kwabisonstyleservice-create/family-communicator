@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { hashPassword, verifyPassword } from "../src/lib/auth/password.ts";
-import { signInSchema, signUpSchema } from "../src/lib/auth/validation.ts";
+import { forgotPasswordSchema, resetPasswordSchema, signInSchema, signUpSchema } from "../src/lib/auth/validation.ts";
+import { createPasswordResetToken, hashPasswordResetToken } from "../src/lib/auth/reset-token.ts";
 
 test("sign-in normalizes email addresses", () => {
   const result = signInSchema.parse({ email: "  Parent@Example.com ", password: "secret" });
@@ -46,4 +47,27 @@ test("password hashes verify without storing plaintext", async () => {
   assert.notEqual(hash, "VeryStrong123");
   assert.equal(await verifyPassword("VeryStrong123", hash), true);
   assert.equal(await verifyPassword("WrongPassword123", hash), false);
+});
+
+test("password reset requests normalize email without exposing account state", () => {
+  const result = forgotPasswordSchema.parse({ email: " Parent@Example.com " });
+  assert.equal(result.email, "parent@example.com");
+});
+
+test("password reset tokens are random and stored only as hashes", () => {
+  const first = createPasswordResetToken();
+  const second = createPasswordResetToken();
+  assert.notEqual(first.token, second.token);
+  assert.equal(first.tokenHash, hashPasswordResetToken(first.token));
+  assert.match(first.tokenHash, /^[0-9a-f]{64}$/);
+  assert.equal(first.tokenHash.includes(first.token), false);
+});
+
+test("new passwords must be strong and match", () => {
+  const result = resetPasswordSchema.safeParse({
+    token: createPasswordResetToken().token,
+    password: "Weak-password",
+    confirmPassword: "different",
+  });
+  assert.equal(result.success, false);
 });

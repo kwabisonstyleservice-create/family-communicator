@@ -1,10 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { register, signIn } from "@/lib/auth/service";
-import { signInSchema, signUpSchema } from "@/lib/auth/validation";
+import { register, requestPasswordReset, resetPassword, signIn } from "@/lib/auth/service";
+import { forgotPasswordSchema, resetPasswordSchema, signInSchema, signUpSchema } from "@/lib/auth/validation";
 
 export type AuthState = { error?: string; fields?: Record<string, string> };
+export type ResetRequestState = AuthState & { success?: string };
 
 function messageFrom(error: unknown) {
   if (!(error instanceof Error)) return "Something went wrong. Please try again.";
@@ -38,4 +39,31 @@ export async function signUpAction(_state: AuthState, formData: FormData): Promi
     return { error: messageFrom(error), fields };
   }
   redirect("/dashboard");
+}
+
+export async function forgotPasswordAction(
+  _state: ResetRequestState,
+  formData: FormData,
+): Promise<ResetRequestState> {
+  const parsed = forgotPasswordSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Enter a valid email address." };
+
+  try {
+    await requestPasswordReset(parsed.data.email);
+  } catch (error) {
+    console.error("Password-reset request failed", error instanceof Error ? error.message : "Unknown error");
+  }
+
+  return {
+    success: "If an account exists for that email, a reset link is on its way. Check your inbox and spam folder.",
+  };
+}
+
+export async function resetPasswordAction(_state: AuthState, formData: FormData): Promise<AuthState> {
+  const parsed = resetPasswordSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check your details." };
+
+  const changed = await resetPassword(parsed.data.token, parsed.data.password);
+  if (!changed) return { error: "This reset link is invalid or has expired. Request a new one." };
+  redirect("/auth/sign-in?reset=success");
 }

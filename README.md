@@ -6,6 +6,7 @@ Family Communicator is a private family home base for shared plans, household ta
 
 - Create a new family account or join with an invite code
 - Secure password login with temporary lockout after repeated failures
+- Secure password recovery with expiring, one-time email links
 - Mobile-first family dashboard
 - Shared calendar and household tasks
 - Family announcement board
@@ -27,7 +28,8 @@ Family Communicator is a private family home base for shared plans, household ta
 1. Copy `.env.example` to `.env.local`.
 2. Add a pooled Neon connection for the `thuis_runtime` role.
 3. Generate `SESSION_SECRET` with `openssl rand -base64 32`.
-4. Run `npm install` and `npm run dev -- -H 127.0.0.1`.
+4. Add `APP_URL`, `RESEND_API_KEY`, and `EMAIL_FROM` for password-reset emails.
+5. Run `npm install` and `npm run dev -- -H 127.0.0.1`.
 
 Useful checks:
 

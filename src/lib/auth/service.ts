@@ -1,6 +1,8 @@
 import type { PoolClient } from "pg";
 import { hashPassword, verifyPassword } from "./password";
 import { createSession } from "./session";
+import { createPasswordResetToken, hashPasswordResetToken } from "./reset-token";
+import { passwordResetUrl, sendPasswordResetEmail } from "@/lib/email/password-reset";
 import type { FamilyPrincipal, FamilyRole } from "@/lib/db/context";
 import { firstRow, withRuntimeClient } from "@/lib/db/context";
 
@@ -106,4 +108,31 @@ export async function signIn(email: string, password: string) {
     } satisfies FamilyPrincipal;
   });
   await createSession(principal);
+}
+
+export async function requestPasswordReset(email: string) {
+  const { token, tokenHash } = createPasswordResetToken();
+  const expiresAt = new Date(Date.now() + 20 * 60 * 1000);
+  const created = await withRuntimeClient(async (client) => {
+    const result = await client.query<{ created: boolean }>(
+      "SELECT auth.request_password_reset($1, $2::char(64), $3) AS created",
+      [email, tokenHash, expiresAt],
+    );
+    return result.rows[0]?.created === true;
+  });
+
+  if (!created) return;
+  await sendPasswordResetEmail({ email, resetUrl: passwordResetUrl(token) });
+}
+
+export async function resetPassword(token: string, password: string) {
+  const tokenHash = hashPasswordResetToken(token);
+  const passwordHash = await hashPassword(password);
+  return withRuntimeClient(async (client) => {
+    const result = await client.query<{ changed: boolean }>(
+      "SELECT auth.consume_password_reset($1::char(64), $2) AS changed",
+      [tokenHash, passwordHash],
+    );
+    return result.rows[0]?.changed === true;
+  });
 }

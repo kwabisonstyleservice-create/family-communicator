@@ -17,6 +17,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
       {mode === "sign-up" && <label className="field">Your name<input name="name" autoComplete="name" defaultValue={state.fields?.name} required /></label>}
       <label className="field">Email address<input name="email" type="email" autoComplete="email" defaultValue={state.fields?.email} required /></label>
       <label className="field">Password<input name="password" type="password" autoComplete={mode === "sign-in" ? "current-password" : "new-password"} required /></label>
+      {mode === "sign-in" && <Link className="forgot-link" href="/auth/forgot-password">Forgot your password?</Link>}
       {mode === "sign-up" && <>
         <label className="field">Confirm password<input name="confirmPassword" type="password" autoComplete="new-password" required /></label>
         <div className="segmented" aria-label="Family setup">

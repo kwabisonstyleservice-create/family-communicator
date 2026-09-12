@@ -94,6 +94,9 @@ button { cursor: pointer; }
 .segmented label:has(input:checked) { background: white; box-shadow: 0 2px 8px rgba(36,52,47,.08); }
 .segmented input { position: absolute; opacity: 0; }
 .form-error { margin: 0; padding: 10px 12px; color: #9f382d; background: var(--coral-soft); border-radius: 10px; font-size: .86rem; }
+.form-success { margin: 0 0 14px; padding: 10px 12px; color: var(--green); background: var(--green-soft); border-radius: 10px; font-size: .86rem; }
+.forgot-link { margin-top: -9px; color: var(--green); text-align: right; font-size: .84rem; font-weight: 750; }
+.password-hint { margin: -6px 0 0; color: var(--muted); font-size: .8rem; }
 .form-foot { margin-top: 20px; color: var(--muted); text-align: center; font-size: .88rem; }
 .form-foot a { color: var(--green); font-weight: 750; }
 
