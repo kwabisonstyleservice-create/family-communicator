@@ -29,15 +29,20 @@ export async function withRuntimeClient<T>(work: (client: PoolClient) => Promise
 
 export async function withFamilyContext<T>(
   principal: FamilyPrincipal,
-  work: (client: PoolClient) => Promise<T>,
+  work: (client: PoolClient, role: FamilyRole) => Promise<T>,
 ) {
   return withRuntimeClient(async (client) => {
     await client.query("BEGIN");
     try {
       const role = databaseRole[principal.role];
       await client.query(`SET LOCAL ROLE ${role}`);
-      await client.query("SELECT * FROM app.set_context($1)", [principal.memberId]);
-      const result = await work(client);
+      const context = await client.query<{ family_role: FamilyRole; household_id: string }>("SELECT * FROM app.set_context($1)", [principal.memberId]);
+      const current = context.rows[0];
+      if (!current || !Object.hasOwn(databaseRole, current.family_role) || current.household_id !== principal.householdId) {
+        throw new Error("Family access is no longer valid.");
+      }
+      await client.query(`SET LOCAL ROLE ${databaseRole[current.family_role]}`);
+      const result = await work(client, current.family_role);
       await client.query("COMMIT");
       return result;
     } catch (error) {
