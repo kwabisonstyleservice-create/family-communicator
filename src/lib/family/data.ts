@@ -2,7 +2,7 @@ import type { PoolClient } from "pg";
 import type { FamilyPrincipal, FamilyRole } from "@/lib/db/context";
 import { withFamilyContext } from "@/lib/db/context";
 
-export type FamilyMember = { id: string; display_name: string; family_role: FamilyRole; avatar_url: string | null };
+export type FamilyMember = { id: string; display_name: string; family_role: FamilyRole; family_label: string | null; avatar_url: string | null };
 export type FamilyEvent = { id: string; title: string; location: string | null; starts_at: Date; ends_at: Date };
 export type FamilyChore = { id: string; title: string; status: "todo" | "in_progress" | "done" | "verified"; points: number; due_date: string | null; assigned_to: string | null; assigned_name: string | null };
 export type Announcement = { id: string; title: string; body: string; priority: "normal" | "important" | "urgent"; created_at: Date; creator_name: string | null };
@@ -26,11 +26,11 @@ async function rows<T>(client: PoolClient, query: string, values: unknown[] = []
 }
 
 export async function getFamilySnapshot(principal: FamilyPrincipal): Promise<FamilySnapshot> {
-  return withFamilyContext(principal, async (client) => {
+  return withFamilyContext(principal, async (client, currentRole) => {
     const members = await rows<FamilyMember>(client, `
-      SELECT id, display_name, family_role, avatar_url
+      SELECT id, display_name, family_role, avatar_url, family_label
       FROM family.v_members_roster
-      WHERE household_id = app.household_id()
+      WHERE household_id = app.household_id() AND is_active
       ORDER BY CASE family_role WHEN 'admin' THEN 1 WHEN 'parent' THEN 2 WHEN 'child' THEN 3 ELSE 4 END, display_name
     `);
     const events = await rows<FamilyEvent>(client, `
@@ -39,7 +39,7 @@ export async function getFamilySnapshot(principal: FamilyPrincipal): Promise<Fam
       WHERE household_id = app.household_id() AND ends_at >= now() - interval '4 hours'
       ORDER BY starts_at LIMIT 12
     `);
-    const chores = principal.role === "guest" ? [] : await rows<FamilyChore>(client, `
+    const chores = currentRole === "guest" ? [] : await rows<FamilyChore>(client, `
       SELECT c.id, c.title, c.status, c.points, c.due_date, c.assigned_to, m.display_name AS assigned_name
       FROM family.chores c
       LEFT JOIN family.v_members_roster m ON m.id = c.assigned_to

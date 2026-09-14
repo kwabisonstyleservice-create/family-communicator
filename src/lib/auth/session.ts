@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { withFamilyContext } from "@/lib/db/context";
 import { redirect } from "next/navigation";
 import type { FamilyPrincipal, FamilyRole } from "@/lib/db/context";
 
@@ -52,13 +53,14 @@ export async function readSession(): Promise<FamilyPrincipal | null> {
     ) {
       return null;
     }
-    return {
+    const principal: FamilyPrincipal = {
       memberId: payload.sub,
       householdId: payload.householdId,
       role: payload.role as FamilyRole,
       name: typeof payload.name === "string" ? payload.name : "Family member",
       email: typeof payload.email === "string" ? payload.email : "",
     };
+    return await withFamilyContext(principal, async (_client, role) => ({ ...principal, role }));
   } catch {
     return null;
   }
