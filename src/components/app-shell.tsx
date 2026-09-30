@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, CheckSquare2, Home, LayoutDashboard, LogOut, MessageCircleMore, Settings, ShieldCheck, Users } from "lucide-react";
+import { CalendarDays, CheckSquare2, Heart, Home, LayoutDashboard, LogOut, MessageCircleMore, Settings, ShieldCheck, Users } from "lucide-react";
 import type { FamilyPrincipal } from "@/lib/db/context";
 import { signOutAction } from "@/app/actions";
 
@@ -16,6 +16,7 @@ const links = [
   { href: "/chat", label: "Chat", icon: MessageCircleMore },
   { href: "/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/tasks", label: "Tasks", icon: CheckSquare2 },
+  { href: "/gratitude", label: "Gratitude", icon: Heart },
   { href: "/safety", label: "Safety", icon: ShieldCheck },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

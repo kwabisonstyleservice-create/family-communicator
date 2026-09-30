@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { hashPassword, verifyPassword } from "../src/lib/auth/password.ts";
 import { forgotPasswordSchema, resetPasswordSchema, signInSchema, signUpSchema } from "../src/lib/auth/validation.ts";
 import { createPasswordResetToken, hashPasswordResetToken } from "../src/lib/auth/reset-token.ts";
+import { gratitudeEntrySchema } from "../src/lib/gratitude/validation.ts";
 
 test("sign-in normalizes email addresses", () => {
   const result = signInSchema.parse({ email: "  Parent@Example.com ", password: "secret" });
@@ -70,4 +71,10 @@ test("new passwords must be strong and match", () => {
     confirmPassword: "different",
   });
   assert.equal(result.success, false);
+});
+
+test("gratitude entries are trimmed and limited to 500 characters", () => {
+  assert.equal(gratitudeEntrySchema.parse({ body: "  A kind message  " }).body, "A kind message");
+  assert.equal(gratitudeEntrySchema.safeParse({ body: "" }).success, false);
+  assert.equal(gratitudeEntrySchema.safeParse({ body: "x".repeat(501) }).success, false);
 });

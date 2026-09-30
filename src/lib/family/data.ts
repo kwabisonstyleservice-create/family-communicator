@@ -26,7 +26,7 @@ async function rows<T>(client: PoolClient, query: string, values: unknown[] = []
 }
 
 export async function getFamilySnapshot(principal: FamilyPrincipal): Promise<FamilySnapshot> {
-  return withFamilyContext(principal, async (client, currentRole) => {
+  return withFamilyContext(principal, async (client) => {
     const members = await rows<FamilyMember>(client, `
       SELECT id, display_name, family_role, avatar_url, family_label
       FROM family.v_members_roster
@@ -39,7 +39,7 @@ export async function getFamilySnapshot(principal: FamilyPrincipal): Promise<Fam
       WHERE household_id = app.household_id() AND ends_at >= now() - interval '4 hours'
       ORDER BY starts_at LIMIT 12
     `);
-    const chores = currentRole === "guest" ? [] : await rows<FamilyChore>(client, `
+    const chores = await rows<FamilyChore>(client, `
       SELECT c.id, c.title, c.status, c.points, c.due_date, c.assigned_to, m.display_name AS assigned_name
       FROM family.chores c
       LEFT JOIN family.v_members_roster m ON m.id = c.assigned_to
