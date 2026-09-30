@@ -2,6 +2,8 @@ import {
   boolean,
   char,
   date,
+  foreignKey,
+  index,
   integer,
   numeric,
   pgSchema,
@@ -118,6 +120,25 @@ export const announcements = family.table("announcements", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const chatMessages = family.table(
+  "chat_messages",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    householdId: uuid("household_id").notNull().references(() => households.id),
+    senderId: uuid("sender_id").notNull(),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.senderId, table.householdId],
+      foreignColumns: [members.id, members.householdId],
+      name: "chat_messages_sender_household_fk",
+    }).onDelete("cascade"),
+    index("chat_messages_household_time_idx").on(table.householdId, table.createdAt, table.id),
+  ],
+);
 
 export const checkIns = family.table("check_ins", {
   id: uuid("id").defaultRandom().primaryKey(),
