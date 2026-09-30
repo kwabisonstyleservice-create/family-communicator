@@ -140,6 +140,28 @@ export const chatMessages = family.table(
   ],
 );
 
+export const gratitudeEntries = family.table(
+  "gratitude_entries",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    householdId: uuid("household_id").notNull().references(() => households.id),
+    memberId: uuid("member_id").notNull(),
+    body: text("body").notNull(),
+    gratitudeDate: date("gratitude_date").notNull(),
+    entrySlot: smallint("entry_slot").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.memberId, table.householdId],
+      foreignColumns: [members.id, members.householdId],
+      name: "gratitude_entries_member_household_fk",
+    }).onDelete("cascade"),
+    unique("gratitude_entries_member_day_slot_key").on(table.memberId, table.gratitudeDate, table.entrySlot),
+    index("gratitude_entries_household_day_idx").on(table.householdId, table.gratitudeDate, table.createdAt),
+  ],
+);
+
 export const checkIns = family.table("check_ins", {
   id: uuid("id").defaultRandom().primaryKey(),
   householdId: uuid("household_id").notNull().references(() => households.id),

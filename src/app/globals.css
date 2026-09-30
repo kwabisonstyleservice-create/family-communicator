@@ -180,6 +180,18 @@ button { cursor: pointer; }
 .chat-composer textarea { min-width: 0; width: 100%; resize: none; padding: 11px 13px; color: var(--ink); background: white; border: 1px solid #d8ddd9; border-radius: 14px; outline: none; }
 .chat-composer textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(39,105,85,.1); }
 .chat-composer .form-error { grid-column: 1 / -1; }
+.form-hint { margin: -3px 0 0; color: var(--muted); font-size: .8rem; }
+.gratitude-layout { align-items: start; }
+.gratitude-list { display: grid; gap: 24px; }
+.gratitude-day h3 { margin: 0 0 5px; color: var(--muted); font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; }
+.gratitude-entry { padding: 14px 3px; display: flex; align-items: flex-start; gap: 13px; border-bottom: 1px solid #efefe8; }
+.gratitude-entry:last-child { border-bottom: 0; }
+.gratitude-entry .row-main p { margin: 4px 0 5px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.gratitude-entry time { color: var(--muted); font-size: .72rem; }
+.gratitude-limit { display: flex; gap: 12px; align-items: flex-start; padding: 16px; color: var(--green); background: var(--green-soft); border-radius: 15px; }
+.gratitude-limit p { margin: 0; }
+.gratitude-limit strong, .gratitude-limit span { display: block; }
+.gratitude-limit span { margin-top: 3px; color: var(--muted); font-size: .82rem; }
 .mobile-bar { display: none; }
 
 @media (max-width: 900px) {
@@ -194,8 +206,8 @@ button { cursor: pointer; }
   .app-body { display: block; }
   .sidebar { display: none; }
   .app-main { padding-bottom: 95px; }
-  .mobile-bar { position: fixed; z-index: 10; left: 12px; right: 12px; bottom: 12px; padding: 8px; display: grid; grid-template-columns: repeat(7, 1fr); background: rgba(255,255,255,.94); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
-  .mobile-link { padding: 7px 2px; display: grid; place-items: center; gap: 3px; color: var(--muted); font-size: .61rem; font-weight: 750; }
+  .mobile-bar { position: fixed; z-index: 10; left: 12px; right: 12px; bottom: 12px; padding: 8px; display: flex; overflow-x: auto; background: rgba(255,255,255,.94); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+  .mobile-link { min-width: 60px; padding: 7px 2px; flex: 1 0 60px; display: grid; place-items: center; gap: 3px; color: var(--muted); font-size: .61rem; font-weight: 750; }
   .mobile-link.active { color: var(--green); }
   .dashboard-grid, .content-grid { grid-template-columns: 1fr; }
 }

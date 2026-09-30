@@ -47,12 +47,16 @@ export async function createChoreAction(_state: ActionState, formData: FormData)
   const parsed = z.object({ title: text(160), assignedTo: z.uuid().optional().or(z.literal("")), dueDate: z.iso.date().optional().or(z.literal("")), points: z.coerce.number().int().min(0).max(1000) }).safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check the task details." };
   const session = await requireSession();
-  if (!['admin', 'parent'].includes(session.role)) return { error: "Only parents and family admins can add tasks." };
   try {
-    await withFamilyContext(session, (client) => client.query(`
-      INSERT INTO family.chores (household_id, assigned_to, title, points, due_date)
-      VALUES (app.household_id(), nullif($1, '')::uuid, $2, $3, nullif($4, '')::date)
-    `, [parsed.data.assignedTo ?? "", parsed.data.title, parsed.data.points, parsed.data.dueDate ?? ""]));
+    await withFamilyContext(session, (client, currentRole) => {
+      const parental = currentRole === "admin" || currentRole === "parent";
+      const assignedTo = parental ? (parsed.data.assignedTo ?? "") : session.memberId;
+      const points = parental ? parsed.data.points : 0;
+      return client.query(`
+        INSERT INTO family.chores (household_id, assigned_to, title, points, due_date)
+        VALUES (app.household_id(), nullif($1, '')::uuid, $2, $3, nullif($4, '')::date)
+      `, [assignedTo, parsed.data.title, points, parsed.data.dueDate ?? ""]);
+    });
   } catch { return { error: "This task could not be added." }; }
   revalidatePath("/dashboard"); revalidatePath("/tasks");
   return { ok: true };
