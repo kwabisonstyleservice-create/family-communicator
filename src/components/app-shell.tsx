@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, CheckSquare2, Home, LayoutDashboard, LogOut, Settings, ShieldCheck, Users } from "lucide-react";
+import { CalendarDays, CheckSquare2, Home, LayoutDashboard, LogOut, MessageCircleMore, Settings, ShieldCheck, Users } from "lucide-react";
 import type { FamilyPrincipal } from "@/lib/db/context";
 import { signOutAction } from "@/app/actions";
 
@@ -13,6 +13,7 @@ function initials(name: string) {
 const links = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/family", label: "Family", icon: Users },
+  { href: "/chat", label: "Chat", icon: MessageCircleMore },
   { href: "/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/tasks", label: "Tasks", icon: CheckSquare2 },
   { href: "/safety", label: "Safety", icon: ShieldCheck },
@@ -28,6 +29,6 @@ export function AppShell({ session, children }: { session: FamilyPrincipal; chil
       <div className="side-profile"><span className="avatar">{initials(session.name)}</span><div><strong>{session.name}</strong><small>{session.role}</small></div><form action={signOutAction}><button className="icon-button" aria-label="Sign out"><LogOut size={17} /></button></form></div>
     </aside>
     <main className="app-main">{children}</main>
-    <nav className="mobile-bar">{links.map(({ href, label, icon: Icon }) => <Link className={`mobile-link ${pathname === href ? "active" : ""}`} href={href} key={href}><Icon size={19} />{label}</Link>)}</nav>
+    <nav className="mobile-bar" aria-label="Primary navigation">{links.map(({ href, label, icon: Icon }) => <Link className={`mobile-link ${pathname === href ? "active" : ""}`} href={href} key={href}><Icon size={19} />{label}</Link>)}</nav>
   </div>;
 }
