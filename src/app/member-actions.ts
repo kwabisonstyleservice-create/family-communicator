@@ -11,7 +11,7 @@ export async function classifyMemberAction(_state: ActionState, formData: FormDa
   if (session.role !== "admin") return { error: "Only the family admin can classify members." };
   const parsed = z.object({
     memberId: z.uuid(),
-    label: z.enum(["guest", "son", "daughter", "mother", "father"]),
+    label: z.enum(["guest", "son", "daughter", "mother", "father", "brother", "sister", "big_brother", "big_sister", "little_brother", "little_sister", "uncle", "aunt"]),
   }).safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "Choose a member and a valid classification." };
   try {
