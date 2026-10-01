@@ -201,3 +201,8 @@ export const calendarEventMembers = family.table(
   },
   (table) => [primaryKey({ columns: [table.eventId, table.memberId] })],
 );
+
+export const appearanceSettings = family.table("appearance_settings", {
+  householdId: uuid("household_id").primaryKey().references(() => households.id, { onDelete: "cascade" }),
+  theme: text("theme").notNull().default("forest"),
+});

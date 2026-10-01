@@ -1,5 +1,7 @@
 "use client";
 
+import type { CSSProperties } from "react";
+import { familyThemes, findFamilyTheme } from "@/lib/family/themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CalendarDays, CheckSquare2, Heart, Home, LayoutDashboard, LogOut, MessageCircleMore, Settings, ShieldCheck, Users } from "lucide-react";
@@ -21,9 +23,10 @@ const links = [
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
-export function AppShell({ session, children }: { session: FamilyPrincipal; children: React.ReactNode }) {
+export function AppShell({ session, children, themeId }: { session: FamilyPrincipal; children: React.ReactNode; themeId: string }) {
   const pathname = usePathname();
-  return <div className="app-body">
+  const theme = findFamilyTheme(themeId) ?? familyThemes[0];
+  return <div className="app-body" style={{ "--green": theme.color, "--green-soft": theme.soft, "--paper": theme.paper, background: theme.paper } as CSSProperties}>
     <aside className="sidebar">
       <Link className="brand" href="/dashboard"><span className="brand-mark"><Home size={20} /></span>Family Communicator</Link>
       <nav className="side-nav">{links.map(({ href, label, icon: Icon }) => <Link className={`side-link ${pathname === href ? "active" : ""}`} href={href} key={href}><Icon size={19} />{label}</Link>)}</nav>
