@@ -10,7 +10,7 @@ export type GratitudeEntry = {
   created_at: Date;
 };
 
-export async function getFamilyGratitude(principal: FamilyPrincipal) {
+export async function getFamilyGratitude(principal: FamilyPrincipal, todayOnly = false) {
   return withFamilyContext(principal, async (client) => {
     const entries = await client.query<GratitudeEntry>(`
       SELECT entry.id, entry.member_id, member.display_name AS member_name,
@@ -20,9 +20,10 @@ export async function getFamilyGratitude(principal: FamilyPrincipal) {
       JOIN family.v_members_roster member ON member.id = entry.member_id
       WHERE entry.household_id = app.household_id()
         AND entry.created_at >= now() - interval '31 days'
+        AND (NOT $1::boolean OR entry.gratitude_date = (now() AT TIME ZONE 'Europe/Amsterdam')::date)
       ORDER BY entry.gratitude_date DESC, entry.created_at DESC, entry.id DESC
       LIMIT 200
-    `);
+    `, [todayOnly]);
     const today = await client.query<{ count: number }>(`
       SELECT count(*)::int AS count
       FROM family.gratitude_entries

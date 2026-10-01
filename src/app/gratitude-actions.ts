@@ -44,5 +44,6 @@ export async function createGratitudeAction(_state: ActionState, formData: FormD
   }
 
   revalidatePath("/gratitude");
+  revalidatePath("/dashboard");
   return { ok: true };
 }
