@@ -84,8 +84,8 @@ export function initials(name: string) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "F";
 }
 
-export function formatDate(value: Date | string, options?: Intl.DateTimeFormatOptions) {
-  return new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Amsterdam", day: "numeric", month: "short", ...options }).format(new Date(value));
+export function formatDate(value: Date | string, options?: Intl.DateTimeFormatOptions, locale = "en") {
+  return new Intl.DateTimeFormat(locale === "nl" ? "nl-NL" : "en-GB", { timeZone: "Europe/Amsterdam", day: "numeric", month: "short", ...options }).format(new Date(value));
 }
 
 export function formatTime(value: Date | string) {

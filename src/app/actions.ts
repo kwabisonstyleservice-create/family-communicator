@@ -45,7 +45,7 @@ export async function sosAction(_state: ActionState, formData: FormData): Promis
 
 export async function createChoreAction(_state: ActionState, formData: FormData): Promise<ActionState> {
   const parsed = z.object({ title: text(160), assignedTo: z.uuid().optional().or(z.literal("")), dueDate: z.iso.date().optional().or(z.literal("")), points: z.coerce.number().int().min(0).max(1000) }).safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check the task details." };
+  if (!parsed.success) return { error: "Check the task details." };
   const session = await requireSession();
   try {
     await withFamilyContext(session, (client, currentRole) => {
