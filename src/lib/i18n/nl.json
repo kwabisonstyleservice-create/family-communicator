@@ -375,5 +375,13 @@
   "An account with this email already exists.": "Er bestaat al een account met dit e-mailadres.",
   "That family code is invalid or expired.": "Die familiecode is ongeldig of verlopen.",
   "This account is temporarily locked. Try again in 15 minutes.": "Dit account is tijdelijk geblokkeerd. Probeer het over 15 minuten opnieuw.",
-  "Email or password is incorrect.": "E-mailadres of wachtwoord is onjuist."
+  "Email or password is incorrect.": "E-mailadres of wachtwoord is onjuist.",
+  "Task details": "Taakdetails",
+  "View task details": "Taakdetails bekijken",
+  "Back to tasks": "Terug naar taken",
+  "Task description": "Taakomschrijving",
+  "Assigned to": "Toegewezen aan",
+  "No due date": "Geen uiterste datum",
+  "Completed on": "Afgerond op",
+  "Mark as complete": "Markeren als afgerond"
 }

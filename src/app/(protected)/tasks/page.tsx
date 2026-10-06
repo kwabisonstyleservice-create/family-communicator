@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getTranslator } from "@/lib/i18n/server";
 import { Check, CheckSquare2, Trophy } from "lucide-react";
 import { completeChoreAction, createChoreAction } from "@/app/actions";
@@ -28,7 +29,7 @@ export default async function TasksPage() {
         </div>
         {data.chores.length ? <div className="list">{data.chores.map((chore) => <article className="list-row" key={chore.id}>
           <span className="row-icon"><CheckSquare2 size={18} /></span>
-          <div className="row-main"><strong>{chore.title}</strong><span>{chore.assigned_name || t("Anyone")}{chore.due_date ? ` · ${t("due")} ${formatDate(chore.due_date)}` : ""}{chore.points ? ` · ${chore.points} ${t("points")}` : ""}</span></div>
+          <Link className="row-main task-link" href={`/tasks/${chore.id}`}><strong>{chore.title}</strong><span>{chore.assigned_name || t("Anyone")}{chore.due_date ? ` · ${t("due")} ${formatDate(chore.due_date)}` : ""}{chore.points ? ` · ${chore.points} ${t("points")}` : ""}</span><span className="task-open">{t("View task details")}</span></Link>
           <span className={`badge ${chore.status === "verified" ? "green" : ""}`}>{t(chore.status.replace("_", " "))}</span>
           {(canAssign || chore.assigned_to === session.memberId) && (chore.status === "todo" || chore.status === "in_progress") && <form action={completeChoreAction}><input type="hidden" name="id" value={chore.id} /><button className="icon-button" aria-label={`${t("Complete")} ${chore.title}`}><Check size={18} /></button></form>}
         </article>)}</div> : <EmptyState>{t("The household task list is clear.")}</EmptyState>}

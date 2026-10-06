@@ -71,6 +71,7 @@ export async function completeChoreAction(formData: FormData) {
     WHERE id = $1 AND household_id = app.household_id() AND status IN ('todo', 'in_progress')
   `, [id.data]));
   revalidatePath("/dashboard"); revalidatePath("/tasks");
+  revalidatePath(`/tasks/${id.data}`);
 }
 
 export async function createEventAction(_state: ActionState, formData: FormData): Promise<ActionState> {

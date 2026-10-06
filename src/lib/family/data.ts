@@ -91,3 +91,17 @@ export function formatDate(value: Date | string, options?: Intl.DateTimeFormatOp
 export function formatTime(value: Date | string) {
   return new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Amsterdam", hour: "2-digit", minute: "2-digit" }).format(new Date(value));
 }
+
+// The database context applies the same household and role restrictions as the list.
+export async function getFamilyChore(principal: FamilyPrincipal, id: string) {
+  return withFamilyContext(principal, async (client) => {
+    const tasks = await rows<FamilyChore & { completed_at: Date | null }>(client, `
+      SELECT c.id, c.title, c.status, c.points, c.due_date, c.assigned_to,
+             c.completed_at, m.display_name AS assigned_name
+      FROM family.chores c
+      LEFT JOIN family.v_members_roster m ON m.id = c.assigned_to
+      WHERE c.id = $1 AND c.household_id = app.household_id()
+    `, [id]);
+    return tasks[0] ?? null;
+  });
+}
