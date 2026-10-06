@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CalendarDays, CheckSquare2, Heart, Home, LayoutDashboard, LogOut, MessageCircleMore, Settings, ShieldCheck, Users } from "lucide-react";
 import type { FamilyPrincipal } from "@/lib/db/context";
+import { EmergencySos } from "@/components/emergency-sos";
 import { signOutAction } from "@/app/actions";
 
 function initials(name: string) {
@@ -34,7 +35,7 @@ export function AppShell({ session, children, themeId }: { session: FamilyPrinci
       <nav className="side-nav">{links.map(({ href, label, icon: Icon }) => <Link className={`side-link ${pathname === href ? "active" : ""}`} href={href} key={href}><Icon size={19} />{t(label)}</Link>)}</nav>
       <div className="side-profile"><span className="avatar">{initials(session.name)}</span><div><strong>{session.name}</strong><small>{t(session.role)}</small></div><form action={signOutAction}><button className="icon-button" aria-label={t("Sign out")}><LogOut size={17} /></button></form></div>
     </aside>
-    <main className="app-main">{children}</main>
+    <main className="app-main"><EmergencySos memberId={session.memberId} />{children}</main>
     <nav className="mobile-bar" aria-label={t("Primary navigation")}>{links.map(({ href, label, icon: Icon }) => <Link className={`mobile-link ${pathname === href ? "active" : ""}`} href={href} key={href}><Icon size={19} />{t(label)}</Link>)}</nav>
   </div>;
 }

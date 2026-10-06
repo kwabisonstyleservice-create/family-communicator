@@ -180,6 +180,8 @@ export const sosAlerts = family.table("sos_alerts", {
   householdId: uuid("household_id").notNull().references(() => households.id),
   memberId: uuid("member_id").notNull().references(() => members.id),
   status: sosStatus("status").notNull().default("active"),
+  locationSharing: boolean("location_sharing").notNull().default(false),
+  locationUpdatedAt: timestamp("location_updated_at", { withTimezone: true }),
   message: text("message"),
   latitude: numeric("latitude", { precision: 9, scale: 6 }),
   longitude: numeric("longitude", { precision: 9, scale: 6 }),

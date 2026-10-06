@@ -29,20 +29,6 @@ export async function checkInAction(_state: ActionState, formData: FormData): Pr
   return { ok: true };
 }
 
-export async function sosAction(_state: ActionState, formData: FormData): Promise<ActionState> {
-  const parsed = z.object({ message: z.string().trim().max(500).optional() }).safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { error: "The message is too long." };
-  const session = await requireSession();
-  try {
-    await withFamilyContext(session, (client) => client.query(`
-      INSERT INTO family.sos_alerts (household_id, member_id, message)
-      VALUES (app.household_id(), app.member_id(), nullif($1, ''))
-    `, [parsed.data.message ?? ""]));
-  } catch { return { error: "The SOS alert could not be sent. Call 112 if there is immediate danger." }; }
-  revalidatePath("/dashboard"); revalidatePath("/safety");
-  return { ok: true };
-}
-
 export async function createChoreAction(_state: ActionState, formData: FormData): Promise<ActionState> {
   const parsed = z.object({ title: text(160), assignedTo: z.uuid().optional().or(z.literal("")), dueDate: z.iso.date().optional().or(z.literal("")), points: z.coerce.number().int().min(0).max(1000) }).safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: "Check the task details." };
